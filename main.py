@@ -5,6 +5,7 @@ import random
 import pyperclip
 import json
 
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 def generate_password():
@@ -14,6 +15,29 @@ def generate_password():
     password_entry.delete(0, END)
     password_entry.insert(0, password)
     pyperclip.copy(password)
+
+
+# ---------------------------- Find PASSWORD ------------------------------- #
+def find_password():
+    website = website_entry.get()
+    email = website_entry.get()
+    try:
+        with open("password.json") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No file found")
+
+    else:
+        if website in data:
+            saved_email = data[website]["email"]
+            saved_password = data[website]["password"]
+            if email == saved_email:
+                messagebox.showinfo(title=website, message=f"email:  {saved_email} \npassword:  {saved_password}")
+            else:
+                messagebox.showinfo(title="Error", message="Wrong email input")
+        else:
+            messagebox.showinfo(title="Error", message="site not found")
+
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save():
@@ -45,6 +69,7 @@ def save():
             website_entry.delete(0, END)
             password_entry.delete(0, END)
 
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -65,21 +90,24 @@ password_label.grid(column=0, row=3)
 
 # Entries
 
-website_entry = Entry(width=53)
-website_entry.grid(column=1, row=1, columnspan=2)
+website_entry = Entry(width=35)
+website_entry.grid(column=1, row=1)
 website_entry.focus()
 
 email_entry = Entry(width=53)
 email_entry.grid(column=1, row=2, columnspan=2)
 email_entry.insert(0, "sachin@gmail.com")
 
-password_entry = Entry(width=34)
+password_entry = Entry(width=35)
 password_entry.grid(column=1, row=3)
 
 generate_password_button = Button(text="Generate Password", command=generate_password)
 generate_password_button.grid(column=2, row=3)
 
-add_button = Button(text="Add Password", width=46, command=save)
+add_button = Button(text="Add Password", width=45, command=save)
 add_button.grid(row=4, column=1, columnspan=2)
+
+add_button = Button(text="Search", width=14, command=find_password)
+add_button.grid(row=1, column=2)
 
 window.mainloop()
